@@ -128,3 +128,6 @@ dist
 
 # dotenv
 .env
+
+#package-lock
+package-lock.json

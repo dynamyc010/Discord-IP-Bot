@@ -11,15 +11,30 @@ module.exports = {
         .setName('get-ip')
         .setDescription('Gets your IP!'),
     async execute(interaction) {
+
+        //Fetches information about bot
+        await interaction.client.application.fetch();
+
         const url = "http://ipv4.icanhazip.com";
         const settings = { method: "GET"};
-        //await interaction.reply({text:"Hold on... Fetching...", ephemeral:true});
+        if(interaction.client.application.owner === interaction.user){
+            await interaction.deferReply({ephemeral:true})
+            await fetch(url, settings).then(res => res.text().then(async (ip) => {
+                await successEmbed.setDescription("My IP is: " + ip)
+                    .setFooter({text:`You're welcome, ${interaction.user.username}.`, iconURL: interaction.user.avatarURL()})
+                await interaction.editReply({embeds: [successEmbed]});
+            }))
+        }
+        else{
+            await interaction.deferReply({ephemeral:true})
+            await fetch(url, settings).then(res => res.text().then(async (ip) => {
+                await successEmbed.setDescription("You're not the owner of this bot, so I cannot give you the IP.")
+                    .setColor(Colors.Red)
+                    .setTitle("Oops!")
+                    .setFooter({text:`You're welcome, ${interaction.user.username}.`, iconURL: interaction.user.avatarURL()})
+                await interaction.editReply({embeds: [successEmbed]});
+            }))
+        }
 
-        await interaction.deferReply({ephemeral:true})
-        await fetch(url, settings).then(res => res.text().then(async (ip) => {
-            await successEmbed.setDescription("My IP is: " + ip)
-                .setFooter({text:`You're welcome, ${interaction.user.username}.`, iconURL: interaction.user.avatarURL()})
-            await interaction.editReply({embeds: [successEmbed]});
-        }))
     },
 };
